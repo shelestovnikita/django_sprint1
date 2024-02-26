@@ -1,3 +1,4 @@
+from django.http import Http404
 from django.shortcuts import render
 
 posts = [
@@ -50,9 +51,14 @@ def index(request):
     return render(request, template, context)
 
 
-def post_detail(request, id):
+def post_detail(request, post_id):
     template = 'blog/detail.html'
-    context = {'post': posts[id]}
+    # можно dict(enumerate(posts)), но лучше так
+    posts_dct = {posts[i]['id']: posts[i] for i in range(0, len(posts))}
+    try:
+        context = {'post': posts_dct[post_id]}
+    except KeyError:
+        raise Http404(f'Post_id = {post_id} does not exist')
     return render(request, template, context)
 
 
